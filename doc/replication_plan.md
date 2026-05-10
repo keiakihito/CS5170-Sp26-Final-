@@ -10,7 +10,7 @@ We replicate the InfoGain-RAG framework, which improves RAG by scoring each retr
 
 ---
 
-## Input
+## Input [x]
 
 | Component | Details |
 |-----------|---------|
@@ -24,14 +24,20 @@ We replicate the InfoGain-RAG framework, which improves RAG by scoring each retr
 
 ## Process
 
-### Step 1 — Query Categorization
+### Step 0 — Preprocessing []
+- Load TriviaQA (110K queries); remove train-test overlap
+- For each query, run Contriever against the Wikipedia dump to retrieve top-100 candidate documents
+- Form `<query, answer, document>` triplets — up to 100 triplets per query
+- Output: triplet dataset ready for DIG scoring in Step 2
+
+### Step 1 — Query Categorization []
 - Run Qwen2.5-7B on each query **without** any retrieved documents
 - Compute baseline generation confidence `p_φ(y|x)`
 - Classify queries as:
   - **Proficient**: LLM answers correctly on its own (high confidence)
   - **Challenging**: LLM struggles without external documents (low confidence)
 
-### Step 2 — DIG Score Computation (Data Collection)
+### Step 2 — DIG Score Computation (Data Collection) []
 - For each query, retrieve top-k candidate documents via Contriever
 - For each `(query, document)` pair, compute confidence **with** the document: `p_φ(y|x, d)`
 - Compute DIG score: `DIG(d|x) = p_φ(y|x, d) − p_φ(y|x)`
@@ -44,7 +50,7 @@ We replicate the InfoGain-RAG framework, which improves RAG by scoring each retr
   - `−0.05 ~ 0.05` → negligible
 - Build training dataset of ~88K `(query, document, DIG score)` triplets
 
-### Step 3 — Multi-task Reranker Training
+### Step 3 — Multi-task Reranker Training []
 - Fine-tune RoBERTa-large on the DIG dataset using two combined losses:
   - **CE Loss** (equation 4): binary classification — helpful vs. noisy documents (68K balanced samples)
   - **Margin Loss** (equation 7): pairwise ranking — ensures negative docs score lower than positives (34K groups of 1 query + 3-5 positive + negative docs)
@@ -52,7 +58,7 @@ We replicate the InfoGain-RAG framework, which improves RAG by scoring each retr
 - Hyperparameters: lr=5e-6, γ=15, α=0.6, ω_i=0.8 for first k=3 tokens
 - Hardware: A800 GPU with Adam optimizer
 
-### Step 4 — Inference with InfoGain-RAG
+### Step 4 — Inference with InfoGain-RAG []
 - New query → Contriever retrieves top-100 documents
 - RoBERTa reranker scores and reorders all documents
 - Filter: keep top-4 documents with score > 0.2 (retain at least 2 if fewer pass)
@@ -60,7 +66,7 @@ We replicate the InfoGain-RAG framework, which improves RAG by scoring each retr
 
 ---
 
-## Output & Evaluation
+## Output & Evaluation []
 
 | Metric | Details |
 |--------|---------|
@@ -73,12 +79,12 @@ We replicate the InfoGain-RAG framework, which improves RAG by scoring each retr
 ## Component Summary
 
 ```
-Query
-  └─► Contriever (retriever)
-        └─► Top-100 candidate documents
-              └─► Qwen2.5-7B (DIG scoring — training only)
-                    └─► DIG-scored triplets
-                          └─► RoBERTa-large fine-tuning (multi-task: CE + Margin loss)
+Training pipeline:
+TriviaQA (110K queries)
+  └─► Step 0: Contriever retrieves top-100 docs → <query, answer, doc> triplets
+        └─► Step 1: Qwen2.5-7B baseline confidence → proficient / challenging labels
+              └─► Step 2: Qwen2.5-7B DIG scoring → scored triplets (~88K samples)
+                    └─► Step 3: RoBERTa-large fine-tuning (CE + Margin loss)
 
 Inference:
 Query → Contriever → RoBERTa reranker → filter (threshold 0.2) → Qwen2.5-7B → Answer
