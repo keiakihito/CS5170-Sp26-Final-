@@ -37,7 +37,7 @@ We replicate the InfoGain-RAG framework, which improves RAG by scoring each retr
   - **Proficient**: LLM answers correctly on its own (high confidence)
   - **Challenging**: LLM struggles without external documents (low confidence)
 
-### Step 2 — DIG Score Computation (Data Collection) []
+### Step 2 — DIG Score Computation (Data Collection) [x]
 - For each query, retrieve top-k candidate documents via Contriever
 - For each `(query, document)` pair, compute confidence **with** the document: `p_φ(y|x, d)`
 - Compute DIG score: `DIG(d|x) = p_φ(y|x, d) − p_φ(y|x)`
