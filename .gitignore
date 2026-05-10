@@ -1,0 +1,46 @@
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Data & models (large files)
+dataset/
+*.tsv
+*.tsv.gz
+*.json.gz
+*.bin
+*.pt
+*.safetensors
+checkpoints/
+models/
+
+# Logs & outputs
+logs/
+runs/
+outputs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+.cursor/
+
+# Secrets
+.env
+*.key
