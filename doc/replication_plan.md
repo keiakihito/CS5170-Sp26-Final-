@@ -50,7 +50,7 @@ We replicate the InfoGain-RAG framework, which improves RAG by scoring each retr
   - `−0.05 ~ 0.05` → negligible
 - Build training dataset of ~88K `(query, document, DIG score)` triplets
 
-### Step 3 — Multi-task Reranker Training []
+### Step 3 — Multi-task Reranker Training [x]
 - Fine-tune RoBERTa-large on the DIG dataset using two combined losses:
   - **CE Loss** (equation 4): binary classification — helpful vs. noisy documents (68K balanced samples)
   - **Margin Loss** (equation 7): pairwise ranking — ensures negative docs score lower than positives (34K groups of 1 query + 3-5 positive + negative docs)
