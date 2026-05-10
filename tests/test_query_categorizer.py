@@ -1,5 +1,4 @@
-import math
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 import torch
@@ -8,11 +7,10 @@ from src.query_categorizer import QueryCategorizer, QueryResult, QueryType
 
 
 # ---------------------------------------------------------------------------
-# Fixtures
+# Mock helpers
 # ---------------------------------------------------------------------------
 
-def make_mock_model_tokenizer(answer_token_ids: list[int], logit_value: float = 5.0):
-    """Return a (model, tokenizer) mock pair that produces controlled logits."""
+def _make_mock_tokenizer(answer_token_ids: list[int]) -> MagicMock:
     tokenizer = MagicMock()
     tokenizer.return_value = {
         "input_ids": torch.tensor([[1, 2, 3]]),
@@ -20,33 +18,56 @@ def make_mock_model_tokenizer(answer_token_ids: list[int], logit_value: float = 
     }
     tokenizer.encode.side_effect = lambda text, **kwargs: answer_token_ids
     tokenizer.decode.side_effect = lambda ids, **kwargs: "answer"
+    return tokenizer
 
-    # Build logits so that the answer tokens always have the highest probability
-    vocab_size = max(answer_token_ids) + 10
-    high_logit = torch.full((1, 1, vocab_size), -100.0)
-    for tid in answer_token_ids:
-        high_logit[0, 0, tid] = logit_value
 
+def _make_high_confidence_logits(answer_token_ids: list[int]) -> torch.Tensor:
+    # Each position strongly favours its answer token → p ≈ 1 per token
+    vocab_size = max(answer_token_ids) + 50
+    logits = torch.full((1, len(answer_token_ids), vocab_size), -100.0)
+    for pos, tid in enumerate(answer_token_ids):
+        logits[0, pos, tid] = 10.0
+    return logits
+
+
+def _make_low_confidence_logits(answer_token_ids: list[int]) -> torch.Tensor:
+    # Uniform logits: answer tokens have no advantage → p ≈ 1/vocab_size ≪ 0.5
+    vocab_size = max(answer_token_ids) + 50
+    return torch.zeros((1, len(answer_token_ids), vocab_size))
+
+
+def _make_mock_model(logits: torch.Tensor) -> MagicMock:
+    output = MagicMock()
+    output.logits = logits
     model = MagicMock()
     model.device = torch.device("cpu")
-    output = MagicMock()
-    output.logits = high_logit.expand(1, len(answer_token_ids), vocab_size)
     model.return_value = output
+    return model
 
+
+def make_mock_model_tokenizer(answer_token_ids: list[int], high: bool = True):
+    """Return a (model, tokenizer) mock pair producing high or low confidence logits."""
+    tokenizer = _make_mock_tokenizer(answer_token_ids)
+    logits = (
+        _make_high_confidence_logits(answer_token_ids)
+        if high
+        else _make_low_confidence_logits(answer_token_ids)
+    )
+    model = _make_mock_model(logits)
     return model, tokenizer
 
 
 @pytest.fixture
 def high_confidence_categorizer():
-    # answer tokens [10, 11, 12] all get logit=10 → near-certain confidence
-    model, tokenizer = make_mock_model_tokenizer([10, 11, 12], logit_value=10.0)
+    # answer tokens strongly favoured at every position → confidence > 0.5
+    model, tokenizer = make_mock_model_tokenizer([10, 11, 12], high=True)
     return QueryCategorizer(model, tokenizer, device="cpu")
 
 
 @pytest.fixture
 def low_confidence_categorizer():
-    # answer tokens [10, 11, 12] get logit=0.1 → very low confidence
-    model, tokenizer = make_mock_model_tokenizer([10, 11, 12], logit_value=0.1)
+    # uniform logits → answer token prob ≈ 1/vocab_size → confidence < 0.5
+    model, tokenizer = make_mock_model_tokenizer([10, 11, 12], high=False)
     return QueryCategorizer(model, tokenizer, device="cpu")
 
 

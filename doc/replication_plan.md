@@ -24,7 +24,7 @@ We replicate the InfoGain-RAG framework, which improves RAG by scoring each retr
 
 ## Process
 
-### Step 0 — Preprocessing []
+### Step 0 — Preprocessing [x]
 - Load TriviaQA (110K queries); remove train-test overlap
 - For each query, run Contriever against the Wikipedia dump to retrieve top-100 candidate documents
 - Form `<query, answer, document>` triplets — up to 100 triplets per query
