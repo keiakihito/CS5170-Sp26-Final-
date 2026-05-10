@@ -30,7 +30,7 @@ We replicate the InfoGain-RAG framework, which improves RAG by scoring each retr
 - Form `<query, answer, document>` triplets — up to 100 triplets per query
 - Output: triplet dataset ready for DIG scoring in Step 2
 
-### Step 1 — Query Categorization []
+### Step 1 — Query Categorization [x]
 - Run Qwen2.5-7B on each query **without** any retrieved documents
 - Compute baseline generation confidence `p_φ(y|x)`
 - Classify queries as:
