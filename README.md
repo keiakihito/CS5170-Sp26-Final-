@@ -89,7 +89,12 @@ outputs/                # Pre-generated sample run — viewable without running 
 
 - Python 3.11+
 - pip (or conda)
-- GPU optional — the demo and tests run on CPU
+
+| Task | GPU required? |
+|---|---|
+| `pytest tests/` — unit tests | No — all models are mocked |
+| `python src/main.py` — demo + charts | No — uses paper numbers, no models loaded |
+| `python src/run_pipeline.py` — full training run | **Yes** — loads Qwen2.5-7B + RoBERTa-large; recommend A100/H100 on RunPod |
 
 ### Install
 

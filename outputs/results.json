@@ -1,0 +1,9 @@
+[
+  {
+    "model": "Qwen2.5-7B",
+    "dataset": "TriviaQA",
+    "approach": "infogain_rag",
+    "em_score": 0.1,
+    "n_samples": 10
+  }
+]
