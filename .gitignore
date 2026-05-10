@@ -26,6 +26,9 @@ dataset/
 checkpoints/
 models/
 
+# Pipeline intermediate checkpoints (large, reproducible)
+outputs/*.pkl
+
 # Logs & outputs
 logs/
 runs/
