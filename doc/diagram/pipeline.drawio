@@ -1,0 +1,313 @@
+<mxfile host="app.diagrams.net" version="21.0.0">
+  <diagram name="InfoGain-RAG Pipeline" id="infogain-rag">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ================================================================
+             TITLE
+        ================================================================ -->
+        <mxCell id="title" value="InfoGain-RAG — Full Pipeline" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="20" width="800" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ================================================================
+             SWIM LANE LABELS (left column)
+        ================================================================ -->
+        <mxCell id="lane0_label" value="Step 0&#xa;Preprocess" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=center;verticalAlign=middle;fontStyle=1;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="20" y="80" width="100" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="lane1_label" value="Step 1&#xa;Query&#xa;Categorize" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=center;verticalAlign=middle;fontStyle=1;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="20" y="240" width="100" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="lane2_label" value="Step 2&#xa;DIG&#xa;Scoring" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=center;verticalAlign=middle;fontStyle=1;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="20" y="400" width="100" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="lane3_label" value="Step 3&#xa;Reranker&#xa;Training" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=center;verticalAlign=middle;fontStyle=1;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="20" y="560" width="100" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="lane4_label" value="Step 4&#xa;Inference" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=center;verticalAlign=middle;fontStyle=1;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="20" y="720" width="100" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="lane5_label" value="Step 5&#xa;Evaluation" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=center;verticalAlign=middle;fontStyle=1;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="20" y="880" width="100" height="140" as="geometry" />
+        </mxCell>
+
+        <!-- ================================================================
+             STEP 0 — PREPROCESSING
+        ================================================================ -->
+
+        <!-- Data sources -->
+        <mxCell id="triviaqa" value="TriviaQA&#xa;(HF Hub cache)" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="140" y="90" width="110" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="wikipedia" value="Wikipedia Dump&#xa;psgs_w100.tsv.gz" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="280" y="90" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- WikipediaCorpus -->
+        <mxCell id="wiki_corpus" value="WikipediaCorpus&#xa;.get_passage(doc_id)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="280" y="170" width="120" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ContrieverRetriever -->
+        <mxCell id="contriever" value="ContrieverRetriever&#xa;(facebook/contriever-msmarco)&#xa;.retrieve(query, top_k=100)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="430" y="90" width="170" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Preprocessor -->
+        <mxCell id="preprocessor" value="Preprocessor&#xa;.load_triviaqa()&#xa;.build_triplets()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="630" y="90" width="130" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Triplet output -->
+        <mxCell id="triplets" value="List[Triplet]&#xa;(query, answer,&#xa;doc_id, doc_text)" style="shape=parallelogram;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="790" y="90" width="130" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Step 0 arrows -->
+        <mxCell id="e_tqa_pre" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="triviaqa" target="preprocessor" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_wiki_corpus" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="wikipedia" target="wiki_corpus" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_corpus_cont" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="wiki_corpus" target="contriever" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_cont_pre" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="contriever" target="preprocessor" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_pre_trip" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="preprocessor" target="triplets" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ================================================================
+             STEP 1 — QUERY CATEGORIZATION
+        ================================================================ -->
+
+        <!-- QueryCategorizer -->
+        <mxCell id="qcat" value="QueryCategorizer&#xa;(Qwen2.5-7B)&#xa;.categorize(query, answer)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="260" width="160" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- QueryResult -->
+        <mxCell id="qresult" value="QueryResult&#xa;type: EASY | HARD&#xa;confidence: float" style="shape=parallelogram;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="750" y="260" width="150" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Confidence threshold note -->
+        <mxCell id="conf_note" value="threshold = 0.5" style="text;html=1;strokeColor=none;fillColor=#fff2cc;align=center;fontSize=9;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="560" y="318" width="160" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Step 1 arrows -->
+        <mxCell id="e_trip_qcat" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="triplets" target="qcat" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_qcat_qres" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="qcat" target="qresult" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ================================================================
+             STEP 2 — DIG SCORING
+        ================================================================ -->
+
+        <!-- DIGScorer -->
+        <mxCell id="dig" value="DIGScorer&#xa;(Qwen2.5-7B)&#xa;.compute_dig(query, answer, doc)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="540" y="420" width="180" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- DIG formula note -->
+        <mxCell id="dig_note" value="DIG = p(y|x,d) − p(y|x)&#xa;smooth W=3, weight α=0.8^0.6" style="text;html=1;strokeColor=none;fillColor=#fff2cc;align=center;fontSize=9;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="540" y="472" width="180" height="28" as="geometry" />
+        </mxCell>
+
+        <!-- DIGResult -->
+        <mxCell id="digresult" value="List[DIGResult]&#xa;category: POS|NEG|NEUTRAL&#xa;dig_score, confidence" style="shape=parallelogram;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="750" y="420" width="160" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Thresholds note -->
+        <mxCell id="thresh_note" value="b1=0.5 → POS   b2=−0.2 → NEG" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=9;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="750" y="472" width="160" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Step 2 arrows -->
+        <mxCell id="e_trip_dig" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="triplets" target="dig" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_qres_dig" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="qresult" target="dig" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_dig_digres" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="dig" target="digresult" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ================================================================
+             STEP 3 — RERANKER TRAINING
+        ================================================================ -->
+
+        <!-- TrainingBatch -->
+        <mxCell id="tbatch" value="TrainingBatch&#xa;query_doc_inputs&#xa;ce_labels, pos/neg scores" style="shape=parallelogram;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="400" y="580" width="160" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- MultiTaskReranker -->
+        <mxCell id="reranker" value="MultiTaskReranker&#xa;(RoBERTa-large)&#xa;forward() → scalar score" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="590" y="580" width="160" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Loss block -->
+        <mxCell id="losses" value="L_total = β·L_CE + (1−β)·L_Margin&#xa;β=0.75  γ=15  LR=5e-6" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="780" y="580" width="190" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- RerankerTrainer -->
+        <mxCell id="trainer" value="RerankerTrainer&#xa;.train_step()  .save()  .load()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="780" y="635" width="190" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Trained model -->
+        <mxCell id="trained_model" value="reranker.pt&#xa;(trained weights)" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="580" width="110" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Step 3 arrows -->
+        <mxCell id="e_digres_tbatch" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="digresult" target="tbatch" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_tbatch_rer" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="tbatch" target="reranker" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_rer_losses" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="reranker" target="losses" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_losses_trainer" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="losses" target="trainer" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_trainer_pt" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="trainer" target="trained_model" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ================================================================
+             STEP 4 — INFERENCE
+        ================================================================ -->
+
+        <!-- Query input -->
+        <mxCell id="query_in" value="Query string" style="shape=parallelogram;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="140" y="750" width="110" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- InferencePipeline steps -->
+        <mxCell id="inf_retrieve" value="Contriever&#xa;retrieve top-100" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="280" y="745" width="110" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="inf_score" value="_score_documents&#xa;(reranker)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="410" y="745" width="110" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="inf_filter" value="_filter_documents&#xa;thresh=0.2 top-4 min-2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="540" y="745" width="130" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="inf_prompt" value="_build_prompt&#xa;docs + query" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="690" y="745" width="110" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="inf_gen" value="Qwen2.5-7B&#xa;_generate_answer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="820" y="745" width="110" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- InferenceResult -->
+        <mxCell id="inf_result" value="InferenceResult&#xa;query, answer&#xa;ranked_docs, selected_docs" style="shape=parallelogram;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="950" y="745" width="150" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Step 4 arrows -->
+        <mxCell id="e_qin_ret" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="query_in" target="inf_retrieve" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_ret_sc" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="inf_retrieve" target="inf_score" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_sc_fi" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="inf_score" target="inf_filter" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_fi_pr" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="inf_filter" target="inf_prompt" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_pr_gen" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="inf_prompt" target="inf_gen" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_gen_res" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="inf_gen" target="inf_result" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Trained model feeds reranker in step 4 -->
+        <mxCell id="e_pt_infscore" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#82b366;" edge="1" source="trained_model" target="inf_score" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ================================================================
+             STEP 5 — EVALUATION
+        ================================================================ -->
+
+        <!-- exact_match / evaluate_exact_match -->
+        <mxCell id="em_fn" value="exact_match()&#xa;evaluate_exact_match()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="910" width="150" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- EvalSuite -->
+        <mxCell id="evalsuite" value="EvalSuite&#xa;.add()  .best_approach()&#xa;.improvement_over_baseline()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="740" y="905" width="170" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ResultsVisualizer -->
+        <mxCell id="viz" value="ResultsVisualizer&#xa;bar_chart_by_dataset()&#xa;beta_sensitivity_plot()&#xa;ablation_bar_chart()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="940" y="900" width="160" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- PNG outputs -->
+        <mxCell id="png_out" value="outputs/&#xa;bar_triviaqa.png&#xa;ablation.png&#xa;beta_sensitivity.png&#xa;sample-run.log" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1130" y="895" width="120" height="75" as="geometry" />
+        </mxCell>
+
+        <!-- Step 5 arrows -->
+        <mxCell id="e_infres_em" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="inf_result" target="em_fn" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_em_suite" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="em_fn" target="evalsuite" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_suite_viz" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="evalsuite" target="viz" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_viz_png" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="viz" target="png_out" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ================================================================
+             LEGEND
+        ================================================================ -->
+        <mxCell id="legend_title" value="Legend" style="text;html=1;strokeColor=none;fillColor=none;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1290" y="80" width="80" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_class" value="Class / method" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="110" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_data" value="Data / artifact" style="shape=parallelogram;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="155" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_store" value="Storage (file / DB)" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="200" width="130" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_loss" value="Loss / formula" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="260" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_dashed" value="Dashed = trained weights&#xa;passed to inference" style="text;html=1;strokeColor=none;fillColor=none;fontSize=9;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="305" width="140" height="30" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

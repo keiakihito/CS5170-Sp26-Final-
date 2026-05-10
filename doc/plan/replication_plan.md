@@ -66,7 +66,7 @@ We replicate the InfoGain-RAG framework, which improves RAG by scoring each retr
 
 ---
 
-## Output & Evaluation []
+## Output & Evaluation [x]
 
 | Metric | Details |
 |--------|---------|

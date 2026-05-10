@@ -29,8 +29,6 @@ models/
 # Logs & outputs
 logs/
 runs/
-outputs/
-*.log
 
 # OS
 .DS_Store
@@ -40,6 +38,10 @@ Thumbs.db
 .vscode/
 .idea/
 .cursor/
+.claude/
+
+# Test cache
+.pytest_cache/
 
 # Secrets
 .env

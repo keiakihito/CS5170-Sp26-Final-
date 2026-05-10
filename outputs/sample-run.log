@@ -1,0 +1,48 @@
+  [No outputs/results.json found — showing paper-reported numbers only]
+  [Run `python src/run_pipeline.py --device cuda` to generate your own results]
+
+────────────────────────────────────────────────────────────
+  InfoGain-RAG — Paper-reported Results
+────────────────────────────────────────────────────────────
+
+  Dataset: TriviaQA
+    [paper] naive_rag         EM=0.529  ███████████████
+    [paper] bge_reranker      EM=0.670  ████████████████████
+    [paper] infogain_rag      EM=0.720  █████████████████████
+
+    Paper InfoGain gain over naive RAG: +0.191 EM (19.1 pp)
+
+  Dataset: NaturalQA
+    [paper] naive_rag         EM=0.481  ██████████████
+    [paper] bge_reranker      EM=0.612  ██████████████████
+    [paper] infogain_rag      EM=0.658  ███████████████████
+
+    Paper InfoGain gain over naive RAG: +0.177 EM (17.7 pp)
+
+────────────────────────────────────────────────────────────
+  Ablation Study — TriviaQA
+────────────────────────────────────────────────────────────
+    ce_only         EM=0.681  ████████████████████
+    margin_only     EM=0.694  ████████████████████
+    multi_task      EM=0.720  █████████████████████
+
+────────────────────────────────────────────────────────────
+  β Sensitivity (TriviaQA, Qwen2.5-7B)
+────────────────────────────────────────────────────────────
+    β=0.00  EM=0.694  ████████████████████
+    β=0.25  EM=0.706  █████████████████████
+    β=0.50  EM=0.713  █████████████████████
+    β=0.75  EM=0.720  █████████████████████  ← best
+    β=1.00  EM=0.681  ████████████████████
+
+────────────────────────────────────────────────────────────
+  Charts saved
+────────────────────────────────────────────────────────────
+    outputs/bar_triviaqa.png
+    outputs/bar_naturalqa.png
+    outputs/beta_sensitivity.png
+    outputs/ablation.png
+
+────────────────────────────────────────────────────────────
+  Done.
+────────────────────────────────────────────────────────────
